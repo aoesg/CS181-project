@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 class field():
     def __init__(self, N = 1000):
@@ -31,8 +32,11 @@ class field():
     def is_finished(self):
         return self.__finished
 
-    def reward_normalize(self, reward):
+    def __reward_normalize(self, reward):
         return (reward - self.__mean) / self.__std
+
+    def __check_info(self, normazlized_R):
+        return (normazlized_R, self.__mean, self.__std)
 
     def reward_check(self):
         if self.k == 0:
@@ -42,8 +46,13 @@ class field():
         self.__finished = True
 
         choosen = self.wheat_record[self.k - 1]
-        normazlized_res = self.reward_normalize(choosen)
-        return (normazlized_res, self.__mean, self.__std)
+        normazlized_res = self.__reward_normalize(choosen)
+        return self.__check_info(normazlized_res)
+
+    def debug_normalize(self):
+        plt.hist(self.__reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
+        plt.title('normalized_distribution')
+        plt.show()
 
 
 
