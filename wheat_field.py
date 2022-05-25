@@ -39,7 +39,7 @@ class field():
     def is_finished(self):
         return self.__finished
 
-    def reward_check(self):
+    def finish_and_check(self):
         if self.k == 0:
             print("You haven't ever entered the field!")
             return None
