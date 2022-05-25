@@ -78,7 +78,9 @@ class Normal_Field(Field):
         return (reward - self.__mean) / self.__std
 
     def check_info(self, normazlized_R):
-        return (normazlized_R, self.__mean, self.__std)
+        return (normazlized_R,
+                self.__mean,
+                self.__std)
 
     def debug_hist(self):
         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
@@ -90,7 +92,7 @@ class Beta_Field(Field):
         Field.__init__(self, N)
 
         self.__scale = random.uniform(10, 500)
-        self.__scale = 1
+        # self.__scale = 1
         self.__alpha = random.uniform(1, 100)
         self.__beta = random.uniform(1, 100)
 
@@ -98,13 +100,18 @@ class Beta_Field(Field):
         return stats.beta.rvs(self.__alpha, self.__beta) * self.__scale
 
     def reward_normalize(self, reward):
-        return reward
+        return reward / self.__scale
 
     def check_info(self, normazlized_R):
-        return normazlized_R
+        return (normazlized_R,
+                stats.beta.cdf(normazlized_R, self.__alpha, self.__beta),
+                self.__alpha,
+                self.__beta,
+                self.__scale)
 
     def debug_hist(self):
         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
         plt.title('Beta({0},{1}), scale={2}'.format(round(self.__alpha, 2), round(self.__beta, 2),
                                                  round(self.__scale, 2)))
+        plt.xlim([0,1])
         plt.show()
