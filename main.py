@@ -4,11 +4,13 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    f1 = wheat_field.field()
+    # f1 = wheat_field.field()
+    # while f1.go_next_wheat():
+    #     pass
 
-    while f1.go_next_wheat():
+    fb1 = wheat_field.beta_field()
+    while fb1.go_next_wheat():
         pass
-
-    f1.debug_normalize()
+    fb1.debug_normalize()
 
 
