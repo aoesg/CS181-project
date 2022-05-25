@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-class field():
+class Field():
     def __init__(self, N = 1000):
         self.N = N
         self.k = 0
@@ -18,6 +18,11 @@ class field():
 
     def check_info(self, normazlized_R):
         pass
+
+    def go_another_field(self):
+        self.k = 0
+        self.wheat_record = []
+        self.__finished = False
 
     def debug_hist(self):
         pass
@@ -39,6 +44,15 @@ class field():
     def is_finished(self):
         return self.__finished
 
+    def compute_explore_rate(self):
+        return self.k / self.N
+
+    def height_of_this_wheat(self):
+        if self.k == 0:
+            print("You haven't ever entered the field!")
+            return
+        return self.wheat_record[-1]
+
     def finish_and_check(self):
         if self.k == 0:
             print("You haven't ever entered the field!")
@@ -50,9 +64,9 @@ class field():
         normazlized_res = self.reward_normalize(choosen)
         return self.check_info(normazlized_res)
 
-class normal_field(field):
+class Normal_Field(Field):
     def __init__(self, N = 1000):
-        field.__init__(self, N)
+        Field.__init__(self, N)
 
         self.__mean = random.uniform(0, 500)
         self.__std = random.uniform(0.1, 4)
@@ -71,9 +85,9 @@ class normal_field(field):
         plt.title('Normalized'.format(round(self.__mean,2), round(self.__std,2)))
         plt.show()
 
-class beta_field(field):
+class Beta_Field(Field):
     def __init__(self, N=1000):
-        field.__init__(self, N)
+        Field.__init__(self, N)
 
         self.__scale = random.uniform(10, 500)
         self.__scale = 1
