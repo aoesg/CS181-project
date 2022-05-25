@@ -68,7 +68,7 @@ class normal_field(field):
 
     def debug_hist(self):
         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
-        plt.title('N({0},{1}^2)'.format(round(self.__mean,2), round(self.__std,2)))
+        plt.title('Normalized'.format(round(self.__mean,2), round(self.__std,2)))
         plt.show()
 
 class beta_field(field):
