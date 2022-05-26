@@ -19,10 +19,14 @@ class Field():
     def check_info(self, normazlized_R):
         pass
 
+    def reset_model_parm(self):
+        pass
+
     def go_another_field(self):
         self.k = 0
         self.wheat_record = []
         self.__finished = False
+        self.reset_model_parm()
 
     def debug_hist(self):
         pass
@@ -87,6 +91,10 @@ class Normal_Field(Field):
         plt.title('Normalized'.format(round(self.__mean,2), round(self.__std,2)))
         plt.show()
 
+    def reset_model_parm(self):
+        self.__mean = random.uniform(0, 500)
+        self.__std = random.uniform(0.1, 4)
+
 class Beta_Field(Field):
     def __init__(self, N=1000):
         Field.__init__(self, N)
@@ -115,3 +123,9 @@ class Beta_Field(Field):
                                                  round(self.__scale, 2)))
         plt.xlim([0,1])
         plt.show()
+
+    def reset_model_parm(self):
+        self.__scale = random.uniform(10, 500)
+        # self.__scale = 1
+        self.__alpha = random.uniform(1, 100)
+        self.__beta = random.uniform(1, 100)
