@@ -9,6 +9,7 @@ class Field():
         self.k = 0
         self.wheat_record = []
         self.__finished = False
+        self.reach_end = False
 
     def gen_wheat(self):
         pass
@@ -26,6 +27,8 @@ class Field():
         self.k = 0
         self.wheat_record = []
         self.__finished = False
+        self.reach_end = False
+
         self.reset_model_parm()
 
     def debug_hist(self):
@@ -37,7 +40,8 @@ class Field():
             return None
         elif self.k == self.N:
             self.__finished = True
-            print("You reach the end of field.")
+            self.reach_end = True
+            # print("You reach the end of field.")
             return None
         else:
             new_wheat = self.gen_wheat()
@@ -84,7 +88,8 @@ class Normal_Field(Field):
     def check_info(self, normazlized_R):
         return (normazlized_R,
                 self.__mean,
-                self.__std)
+                self.__std,
+                self.reach_end)
 
     def debug_hist(self):
         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
@@ -115,7 +120,8 @@ class Beta_Field(Field):
                 stats.beta.cdf(normazlized_R, self.__alpha, self.__beta),
                 self.__alpha,
                 self.__beta,
-                self.__scale)
+                self.__scale,
+                self.reach_end)
 
     def debug_hist(self):
         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
