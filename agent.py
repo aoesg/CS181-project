@@ -5,6 +5,9 @@ class Agent():
     def __init__(self):
         self.reward_info = None
 
+    def learning(self):
+        pass
+
     def to_contiune(self, field):
         pass
 
@@ -19,7 +22,7 @@ class Agent():
             else:
                 break
         self.reward_info = field.finish_and_check()
-
+        self.learning()
         return self.reward_info
 
 class Agent_37(Agent):
