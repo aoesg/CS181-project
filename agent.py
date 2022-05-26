@@ -34,6 +34,7 @@ class Agent_37(Agent):
             return False
         else:
             return True
+
 class Agent_37_t3(Agent):
     def to_contiune(self, field):
         if field.compute_explore_rate() < 0.37:
