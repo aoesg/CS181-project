@@ -10,8 +10,14 @@ if __name__ == '__main__':
 
     ag_37 = agent.Agent_37()
     ag_37_t3 = agent.Agent_37_t3()
+    ag_sqrt_n = agent.Agent_sqrt_n()
+    ag_sqrt_n_t3 = agent.Agent_sqrt_n()
 
     print("ag_37,avg=", agent_test.normalFieldTest_avg(100,ag_37))
-    print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(100, ag_37_t3))
+    # print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(100, ag_37_t3))
+    print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(100, ag_sqrt_n))
+    # print("ag_sqrt_n_t3,avg=", agent_test.normalFieldTest_avg(100, ag_sqrt_n_t3))
+
+
 
 
