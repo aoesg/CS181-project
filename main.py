@@ -3,6 +3,7 @@ import agent
 import matplotlib.pyplot as plt
 import numpy as np
 import agent_test
+import time
 
 if __name__ == '__main__':
     nf1 = wheat_field.Normal_Field()
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     ag_prob_decision_37 = agent.Agent_prob_decision_37()
     ag_prob_decision_former = agent.Agent_prob_decision_former()
 
-    num_game = 100
+    num_game = 1000
 
     print("ag_random,avg=", agent_test.normalFieldTest_avg(num_game,ag_random))
     print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))

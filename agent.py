@@ -2,6 +2,8 @@ import wheat_field
 import random
 import numpy as np  # new import
 from scipy.stats import norm        # new import
+import math
+
 
 class Agent():
     def __init__(self):
@@ -83,7 +85,8 @@ class Agent_prob_decision(Agent):
         # use MLE to perdict normal distribution parameters with before and current samples
         mu = np.mean(wheat_list)
         sigma = np.var(wheat_list)
-        not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
+        not_larger_prob = math.exp(math.log(norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)), math.e) * (field.N - len(wheat_list)))
+        # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
         if not_larger_prob >= 0.5:
             return False
         else:
@@ -97,7 +100,7 @@ class Agent_prob(Agent):
         # use MLE to perdict normal distribution parameters with before and current samples
         mu = np.mean(wheat_list)
         sigma = np.var(wheat_list)
-        not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
+        not_larger_prob = math.exp(math.log(norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)), math.e) * (field.N - len(wheat_list)))
         random_number = random.uniform(0, 1)
         if random_number <= not_larger_prob:
             return False
@@ -114,7 +117,7 @@ class Agent_prob_decision_37(Agent):
         # use MLE to perdict normal distribution parameters with before and current samples
         mu = np.mean(wheat_list)
         sigma = np.var(wheat_list)
-        not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
+        not_larger_prob = math.exp(math.log(norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)), math.e) * (field.N - len(wheat_list)))
         if not_larger_prob >= 0.5:
             return False
         else:
