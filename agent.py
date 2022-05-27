@@ -86,7 +86,7 @@ class Agent_prob_decision(Agent):
         not_larger_prob = norm.cdf(field.height_of_this_wheat(), mu, np.sqrt(sigma))\
                           **(field.N - len(wheat_list))
 
-        if not_larger_prob > 0.8:
+        if not_larger_prob > 0.5:
             return False
         else:
             return True
