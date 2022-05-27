@@ -76,7 +76,62 @@ class Agent_sqrt_n(Agent):
         else:
             return True
 
-class Agent_prob_decision(Agent):
+class Agent_normal_model(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+
+        self.mu = 0
+        self.sigma = 1 # std
+
+    def to_contiune(self, field):
+        pass
+
+    def compute_noLarger_from_now(self, field):
+        wheat_arr = np.array(field.wheat_record)
+        self.mu = np.mean(wheat_arr)
+        self.sigma = np.std(wheat_arr)
+        if self.sigma == 0:
+            return -1
+        # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
+        not_larger_prob = norm.logcdf(field.height_of_this_wheat(), self.mu, self.sigma)
+        not_larger_prob *= field.N - field.k
+        return np.exp(not_larger_prob)
+
+class Agent_prob_decision(Agent_normal_model):
+    def to_contiune(self, field):
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
+            return True
+
+        if noLarger_prob > 0.5:
+            return False
+        else:
+            return True
+
+class Agent_prob(Agent_normal_model):
+    def to_contiune(self, field):
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
+            return True
+
+        if random.uniform(0,1) < noLarger_prob:
+            return False
+        else:
+            return True
+
+class Agent_prob_decision_20(Agent_normal_model):
+    def to_contiune(self, field):
+        if field.compute_explore_rate() < 0.20:
+            return True
+
+        noLarger_prob = self.compute_noLarger_from_now(field)
+
+        if noLarger_prob > 0.5:
+            return False
+        else:
+            return True
+
+class Agent_prob(Agent):
     def to_contiune(self, field):
         wheat_arr = np.array(field.wheat_record)
         # use MLE to perdict normal distribution parameters with before and current samples
@@ -88,39 +143,8 @@ class Agent_prob_decision(Agent):
         not_larger_prob = norm.logcdf(field.height_of_this_wheat(), self.mu, self.sigma)
         not_larger_prob *= field.N - field.k
         not_larger_prob = np.exp(not_larger_prob)
-        # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
-        if not_larger_prob >= 0.5:
-            return False
-        else:
-            return True
 
-class Agent_prob(Agent):
-    def to_contiune(self, field):   # to contiune 写错
-        if len(field.wheat_record) == 0:
-            return True
-        wheat_list = np.array(field.wheat_record)
-        # use MLE to perdict normal distribution parameters with before and current samples
-        mu = np.mean(wheat_list)
-        sigma = np.var(wheat_list)
-        not_larger_prob = math.exp(math.log(norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)), math.e) * (field.N - len(wheat_list)))
-        random_number = random.uniform(0, 1)
-        if random_number <= not_larger_prob:
-            return False
-        else:
-            return True
-
-class Agent_prob_decision_37(Agent):
-    def to_contiune(self, field):
-        if field.compute_explore_rate() < 0.37:
-            return True
-        if len(field.wheat_record) == 0:
-            return True
-        wheat_list = np.array(field.wheat_record)
-        # use MLE to perdict normal distribution parameters with before and current samples
-        mu = np.mean(wheat_list)
-        sigma = np.var(wheat_list)
-        not_larger_prob = math.exp(math.log(norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)), math.e) * (field.N - len(wheat_list)))
-        if not_larger_prob >= 0.5:
+        if random.uniform(0,1) < not_larger_prob:
             return False
         else:
             return True
