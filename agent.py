@@ -1,7 +1,7 @@
 import wheat_field
 import random
-import numpy as np  # new import
-from scipy.stats import norm        # new import
+import numpy as np
+from scipy.stats import norm
 import math
 
 
@@ -67,7 +67,6 @@ class Agent_37_t3(Agent):
         else:
             return True
 
-
 class Agent_sqrt_n(Agent):
     def to_contiune(self, field):
         if field.k < field.N**0.5:
@@ -79,13 +78,16 @@ class Agent_sqrt_n(Agent):
 
 class Agent_prob_decision(Agent):
     def to_contiune(self, field):
-        if len(field.wheat_record) == 0:
-            return True
-        wheat_list = np.array(field.wheat_record)
+        wheat_arr = np.array(field.wheat_record)
         # use MLE to perdict normal distribution parameters with before and current samples
-        mu = np.mean(wheat_list)
-        sigma = np.var(wheat_list)
-        not_larger_prob = math.exp(math.log(norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)), math.e) * (field.N - len(wheat_list)))
+        self.mu = np.mean(wheat_arr)
+        self.sigma = np.std(wheat_arr)
+        if self.sigma == 0:
+            return True
+
+        not_larger_prob = norm.logcdf(field.height_of_this_wheat(), self.mu, self.sigma)
+        not_larger_prob *= field.N - field.k
+        not_larger_prob = np.exp(not_larger_prob)
         # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
         if not_larger_prob >= 0.5:
             return False
