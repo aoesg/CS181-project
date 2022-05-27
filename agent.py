@@ -77,14 +77,16 @@ class Agent_sqrt_n(Agent):
 
 class Agent_prob_decision(Agent):
     def to_contiune(self, field):
-        if len(field.wheat_record) == 0:
-            return True
         wheat_list = np.array(field.wheat_record)
         # use MLE to perdict normal distribution parameters with before and current samples
         mu = np.mean(wheat_list)
         sigma = np.var(wheat_list)
-        not_larger_prob = (norm.cdf(wheat_list[-1], mu, sigma))**(field.N - len(wheat_list))
-        if not_larger_prob >= 0.5:
+        if sigma == 0:
+            return True
+        not_larger_prob = norm.cdf(field.height_of_this_wheat(), mu, np.sqrt(sigma))\
+                          **(field.N - len(wheat_list))
+
+        if not_larger_prob > 0.8:
             return False
         else:
             return True
@@ -97,7 +99,8 @@ class Agent_prob(Agent):
         # use MLE to perdict normal distribution parameters with before and current samples
         mu = np.mean(wheat_list)
         sigma = np.var(wheat_list)
-        not_larger_prob = (norm.cdf(wheat_list[-1], mu, sigma))**(field.N - len(wheat_list))
+        not_larger_prob = (1 - norm.cdf(field.height_of_this_wheat(), mu, sigma))\
+                          **(field.N - len(wheat_list))
         random_number = random.uniform(0, 1)
         if random_number <= not_larger_prob:
             return False
