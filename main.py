@@ -13,10 +13,15 @@ if __name__ == '__main__':
     ag_37 = agent.Agent_37()
     ag_37_t3 = agent.Agent_37_t3()
     ag_sqrt_n = agent.Agent_sqrt_n()
+
     ag_prob_decision = agent.Agent_prob_decision()
-    ag_prob = agent.Agent_prob()
     ag_prob_decision_10 = agent.Agent_prob_decision_10()
-    ag_prob_decision_former = agent.Agent_prob_decision_former()
+    ag_prob_decision_d9 = agent.Agent_prob_decision_d9()
+
+    ag_prob_rand = agent.Agent_prob_rand()
+    ag_prob_rand_10 = agent.Agent_prob_rand_10()
+
+    ag_prob_decision_leak = agent.Agent_prob_decision_leak()
 
     num_game = 100
 
@@ -24,7 +29,14 @@ if __name__ == '__main__':
     # print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))
     # print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
     # print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
-    print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
-    # print("ag_prob,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob))
+
+    # print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
     print("ag_prob_decision_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
-    # print("ag_prob_decision_former,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_former))
+    # print("ag_prob_decision_d9,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_d9))
+
+    # print("ag_prob_rand,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_rand))
+    # print("ag_prob_rand_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_rand_10))
+
+    print("ag_prob_decision_leak,avg=", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
+
+

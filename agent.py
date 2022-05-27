@@ -80,8 +80,8 @@ class Agent_normal_model(Agent):
     def __init__(self):
         Agent.__init__(self)
 
-        self.mu = 0
-        self.sigma = 1 # std
+        self.mu = None
+        self.sigma = None # std
 
     def to_continue(self, field):
         pass
@@ -90,7 +90,7 @@ class Agent_normal_model(Agent):
         wheat_arr = np.array(field.wheat_record)
         self.mu = np.mean(wheat_arr)
         self.sigma = np.std(wheat_arr)
-        if self.sigma == 0:
+        if self.sigma < 0.001:
             return -1
         # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
         not_larger_prob = norm.logcdf(field.height_of_this_wheat(), self.mu, self.sigma)
@@ -108,17 +108,6 @@ class Agent_prob_decision(Agent_normal_model):
         else:
             return True
 
-class Agent_prob(Agent_normal_model):
-    def to_continue(self, field):
-        noLarger_prob = self.compute_noLarger_from_now(field)
-        if noLarger_prob == -1:
-            return True
-
-        if random.uniform(0,1) < noLarger_prob:
-            return False
-        else:
-            return True
-
 class Agent_prob_decision_10(Agent_normal_model):
     def to_continue(self, field):
         if field.k < 10:
@@ -131,37 +120,61 @@ class Agent_prob_decision_10(Agent_normal_model):
         else:
             return True
 
-class Agent_prob(Agent):
+class Agent_prob_decision_d9(Agent_normal_model):
     def to_continue(self, field):
-        wheat_arr = np.array(field.wheat_record)
-        # use MLE to perdict normal distribution parameters with before and current samples
-        self.mu = np.mean(wheat_arr)
-        self.sigma = np.std(wheat_arr)
-        if self.sigma == 0:
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
             return True
 
+        if noLarger_prob > 0.9:
+            return False
+        else:
+            return True
+
+class Agent_prob_rand(Agent_normal_model):
+    def to_continue(self, field):
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
+            return True
+
+        if random.uniform(0,1) < noLarger_prob:
+            return False
+        else:
+            return True
+
+class Agent_prob_rand_10(Agent_normal_model):
+    def to_continue(self, field):
+        if field.k < 10:
+            return True
+
+        noLarger_prob = self.compute_noLarger_from_now(field)
+
+        if random.uniform(0,1) < noLarger_prob:
+            return False
+        else:
+            return True
+
+# Can only explore Normal_Field_Leak !!
+class Agent_prob_decision_leak(Agent_normal_model):
+    def to_continue(self, field):
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
+            return True
+
+        if noLarger_prob > 0.5:
+            return False
+        else:
+            return True
+
+    def compute_noLarger_from_now(self, field):
+        self.mu = field.mean_leak()
+        self.sigma = field.std_leak()
+
+        # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
         not_larger_prob = norm.logcdf(field.height_of_this_wheat(), self.mu, self.sigma)
         not_larger_prob *= field.N - field.k
-        not_larger_prob = np.exp(not_larger_prob)
+        return np.exp(not_larger_prob)
 
-        if random.uniform(0,1) < not_larger_prob:
-            return False
-        else:
-            return True
-
-class Agent_prob_decision_former(Agent):
-    def to_continue(self, field):
-        if len(field.wheat_record) == 0:
-            return True
-        wheat_list = np.array(field.wheat_record)
-        # use MLE to perdict normal distribution parameters with before and current samples
-        mu = np.mean(wheat_list)
-        sigma = np.var(wheat_list)
-        temp_prob = norm.cdf(wheat_list[-1], mu, np.sqrt(sigma))
-        if temp_prob >= 0.9:
-            return False
-        else:
-            return True
 
 """
 model_Field.N

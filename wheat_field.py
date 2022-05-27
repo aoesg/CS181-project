@@ -69,7 +69,7 @@ class Normal_Field(Field):
         Field.__init__(self, N)
 
         self.__mean = random.uniform(0, 500)
-        self.__std = random.uniform(0.1, 4)
+        self.__std = random.uniform(1, 16)
 
     def gen_wheat(self):
         return np.random.normal(self.__mean, self.__std)
@@ -87,6 +87,36 @@ class Normal_Field(Field):
         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
         plt.title('Normalized'.format(round(self.__mean,2), round(self.__std,2)))
         plt.show()
+
+class Normal_Field_Leak(Normal_Field):
+    def __init__(self, N = 1000):
+        Field.__init__(self, N)
+
+        self.__mean = random.uniform(0, 500)
+        self.__std = random.uniform(1, 16)
+
+    def gen_wheat(self):
+        return np.random.normal(self.__mean, self.__std)
+
+    def reward_normalize(self, reward):
+        return (reward - self.__mean) / self.__std
+
+    def check_info(self, normazlized_R):
+        return (normazlized_R,
+                self.__mean,
+                self.__std,
+                self.reach_end)
+
+    def debug_hist(self):
+        plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
+        plt.title('Normalized'.format(round(self.__mean,2), round(self.__std,2)))
+        plt.show()
+
+    def mean_leak(self):
+        return self.__mean
+
+    def std_leak(self):
+        return self.__std
 
 class Beta_Field(Field):
     def __init__(self, N=1000):
