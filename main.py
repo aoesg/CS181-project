@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
     num_game = 100
 
-    # print("ag_random,avg=", agent_test.normalFieldTest_avg(num_game,ag_random))
-    # print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))
-    # print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
-    # print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
+    print("ag_random,avg=", agent_test.normalFieldTest_avg(num_game,ag_random))
+    print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))
+    print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
+    print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
     print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
-    # print("ag_prob,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob))
+    print("ag_prob,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob))
     print("ag_prob_decision_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
-    # print("ag_prob_decision_former,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_former))
+    print("ag_prob_decision_former,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_former))

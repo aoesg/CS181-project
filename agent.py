@@ -156,8 +156,8 @@ class Agent_prob_decision_former(Agent):
         wheat_list = np.array(field.wheat_record)
         # use MLE to perdict normal distribution parameters with before and current samples
         mu = np.mean(wheat_list)
-        sigma = np.var(wheat_list)
-        temp_prob = norm.cdf(wheat_list[-1], mu, np.sqrt(sigma))
+        sigma = np.std(wheat_list)
+        temp_prob = norm.cdf(wheat_list[-1], mu, sigma)
         if temp_prob >= 0.9:
             return False
         else:
