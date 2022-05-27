@@ -14,10 +14,10 @@ class Agent():
         pass
 
     def get_the_wheat(self, field):
-        self.reward_info = None
-
+        self.__init__()
         field.go_another_field()
 
+        field.go_next_wheat() # Ensure at least one wheat now
         while not field.is_finished():
             if self.to_contiune(field) == True:
                 field.go_next_wheat()
@@ -38,12 +38,19 @@ class Agent_37(Agent):
             return True
 
 class Agent_37_t3(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+
+        self.t3_rank = [float('-inf'), float('-inf'), float('-inf')]
+
     def to_contiune(self, field):
         if field.compute_explore_rate() < 0.37:
+            if field.height_of_this_wheat() > self.t3_rank[0]:
+                self.t3_rank[0] = field.height_of_this_wheat()
+                self.t3_rank.sort()
             return True
-        t3_h = field.wheat_record.copy()
-        t3_h.sort(reverse = True)
-        if field.height_of_this_wheat() in t3_h[0:3]:
+
+        if field.height_of_this_wheat() > self.t3_rank[0]:
             return False
         else:
             return True
@@ -57,13 +64,20 @@ class Agent_sqrt_n(Agent):
         else:
             return True
 
-class Agent_sqrt_n_t3(Agent):
+class Agent_sqrt_n_t2(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+
+        self.t2_rank = [float('-inf'), float('-inf')]
+
     def to_contiune(self, field):
         if field.k < np.sqrt(field.N):
+            if field.height_of_this_wheat() > self.t2_rank[0]:
+                self.t2_rank[0] = field.height_of_this_wheat()
+                self.t2_rank.sort()
             return True
-        t3_h = field.wheat_record.copy()
-        t3_h.sort(reverse=True)
-        if field.height_of_this_wheat() in t3_h[0:3]:
+
+        if field.height_of_this_wheat() > self.t2_rank[0]:
             return False
         else:
             return True
