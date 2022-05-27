@@ -15,7 +15,7 @@ if __name__ == '__main__':
     ag_sqrt_n = agent.Agent_sqrt_n()
     ag_prob_decision = agent.Agent_prob_decision()
     ag_prob = agent.Agent_prob()
-    ag_prob_decision_20 = agent.Agent_prob_decision_20()
+    ag_prob_decision_10 = agent.Agent_prob_decision_10()
     ag_prob_decision_former = agent.Agent_prob_decision_former()
 
     num_game = 100
@@ -26,5 +26,5 @@ if __name__ == '__main__':
     # print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
     print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
     # print("ag_prob,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob))
-    print("ag_prob_decision_20,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_20))
+    print("ag_prob_decision_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
     # print("ag_prob_decision_former,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_former))

@@ -12,7 +12,7 @@ class Agent():
     def learning(self):
         pass
 
-    def to_contiune(self, field):
+    def to_continue(self, field):
         pass
 
     def get_the_wheat(self, field):
@@ -21,7 +21,7 @@ class Agent():
 
         field.go_next_wheat() # Ensure at least one wheat now
         while not field.is_finished():
-            if self.to_contiune(field) == True:
+            if self.to_continue(field) == True:
                 field.go_next_wheat()
             else:
                 break
@@ -30,7 +30,7 @@ class Agent():
         return self.reward_info
 
 class Agent_random(Agent):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         if len(field.wheat_record) == 0:
             return True
         random_number = random.uniform(0, 1)
@@ -40,7 +40,7 @@ class Agent_random(Agent):
             return True
 
 class Agent_37(Agent):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         if field.compute_explore_rate() < 0.37:
             return True
 
@@ -55,7 +55,7 @@ class Agent_37_t3(Agent):
 
         self.t3_rank = [float('-inf'), float('-inf'), float('-inf')]
 
-    def to_contiune(self, field):
+    def to_continue(self, field):
         if field.compute_explore_rate() < 0.37:
             if field.height_of_this_wheat() > self.t3_rank[0]:
                 self.t3_rank[0] = field.height_of_this_wheat()
@@ -68,7 +68,7 @@ class Agent_37_t3(Agent):
             return True
 
 class Agent_sqrt_n(Agent):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         if field.k < field.N**0.5:
             return True
         if field.height_of_this_wheat() == max(field.wheat_record):
@@ -83,7 +83,7 @@ class Agent_normal_model(Agent):
         self.mu = 0
         self.sigma = 1 # std
 
-    def to_contiune(self, field):
+    def to_continue(self, field):
         pass
 
     def compute_noLarger_from_now(self, field):
@@ -98,7 +98,7 @@ class Agent_normal_model(Agent):
         return np.exp(not_larger_prob)
 
 class Agent_prob_decision(Agent_normal_model):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         noLarger_prob = self.compute_noLarger_from_now(field)
         if noLarger_prob == -1:
             return True
@@ -109,7 +109,7 @@ class Agent_prob_decision(Agent_normal_model):
             return True
 
 class Agent_prob(Agent_normal_model):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         noLarger_prob = self.compute_noLarger_from_now(field)
         if noLarger_prob == -1:
             return True
@@ -119,9 +119,9 @@ class Agent_prob(Agent_normal_model):
         else:
             return True
 
-class Agent_prob_decision_20(Agent_normal_model):
-    def to_contiune(self, field):
-        if field.compute_explore_rate() < 0.20:
+class Agent_prob_decision_10(Agent_normal_model):
+    def to_continue(self, field):
+        if field.k < 10:
             return True
 
         noLarger_prob = self.compute_noLarger_from_now(field)
@@ -132,7 +132,7 @@ class Agent_prob_decision_20(Agent_normal_model):
             return True
 
 class Agent_prob(Agent):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         wheat_arr = np.array(field.wheat_record)
         # use MLE to perdict normal distribution parameters with before and current samples
         self.mu = np.mean(wheat_arr)
@@ -150,7 +150,7 @@ class Agent_prob(Agent):
             return True
 
 class Agent_prob_decision_former(Agent):
-    def to_contiune(self, field):
+    def to_continue(self, field):
         if len(field.wheat_record) == 0:
             return True
         wheat_list = np.array(field.wheat_record)
