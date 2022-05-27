@@ -2,7 +2,6 @@ import wheat_field
 import random
 import numpy as np
 from scipy.stats import norm
-import math
 
 
 class Agent():

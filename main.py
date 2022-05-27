@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
     # print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
 
-    # print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
+    print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
     print("ag_prob_decision_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
     # print("ag_prob_decision_d9,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_d9))
 
