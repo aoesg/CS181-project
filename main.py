@@ -23,20 +23,22 @@ if __name__ == '__main__':
     ag_prob_rand_10 = agent.Agent_prob_rand_10()
 
     ag_prob_decision_leak = agent.Agent_prob_decision_leak()
+    ag_threshold_learning = agent.Agent_threshold_learning()
 
-    num_game = 50
+    num_game = 300
 
     # print("ag_random,avg=", agent_test.normalFieldTest_avg(num_game,ag_random))
     # print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))
     # print("ag_37_t3,avg=", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
     # print("ag_sqrt_n,avg=", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
 
-    print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
-    print("ag_prob_decision_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
+    # print("ag_prob_decision,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
+    # print("ag_prob_decision_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
     # print("ag_prob_decision_d9,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_d9))
 
     # print("ag_prob_rand,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_rand))
     # print("ag_prob_rand_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_rand_10))
 
-    print("ag_prob_decision_leak,avg=", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
-
+    # print("ag_prob_decision_leak,avg=", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
+    print("ag_threshold_learning,avg=", agent_test.normalFieldTest_avg(num_game, ag_threshold_learning))
+    print(ag_threshold_learning.weights)
