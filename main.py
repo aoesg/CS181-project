@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     ag_prob_decision_leak = agent.Agent_prob_decision_leak()
 
-    num_game = 100
+    num_game = 300
 
     # print("ag_random,avg=", agent_test.normalFieldTest_avg(num_game,ag_random))
     # print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))

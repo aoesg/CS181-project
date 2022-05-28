@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-UPPER_STD = 16
+LOWER_STD = 8
+UPPER_STD = 20
 
 class Field():
     def __init__(self, N = 1000):
@@ -71,7 +72,7 @@ class Normal_Field(Field):
         Field.__init__(self, N)
 
         self.__mean = random.uniform(0, 500)
-        self.__std = random.uniform(1, UPPER_STD)
+        self.__std = random.uniform(LOWER_STD, UPPER_STD)
 
     def gen_wheat(self):
         return np.random.normal(self.__mean, self.__std)
@@ -95,7 +96,7 @@ class Normal_Field_Leak(Normal_Field):
         Field.__init__(self, N)
 
         self.__mean = random.uniform(0, 500)
-        self.__std = random.uniform(1, UPPER_STD)
+        self.__std = random.uniform(LOWER_STD, UPPER_STD)
 
     def gen_wheat(self):
         return np.random.normal(self.__mean, self.__std)
