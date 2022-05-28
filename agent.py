@@ -2,14 +2,12 @@ import wheat_field
 import random
 import numpy as np
 from scipy.stats import norm
+from torch.distributions import Normal, kl_divergence
 
 
 class Agent():
     def __init__(self):
         self.reward_info = None
-
-    def learning(self):
-        pass
 
     def to_continue(self, field):
         pass
@@ -28,7 +26,6 @@ class Agent():
             else:
                 break
         self.reward_info = field.finish_and_check()
-        self.learning()
         return self.reward_info
 
 class Agent_random(Agent):
@@ -180,6 +177,7 @@ class Agent_prob_decision_leak(Agent_normal_model):
 class Agent_threshold_learning(Agent_normal_model):
     def __init__(self):
         Agent_normal_model().__init__()
+
         self.w_size = 20
         self.weights = np.zeros((self.w_size,))
         self.lr_alpha = 0.1
@@ -187,19 +185,47 @@ class Agent_threshold_learning(Agent_normal_model):
         self.lr_beta = 0.1
         self.b_reduce = 0.0001
 
-    def learning(self):
-        epoches = 1000
-        for _ in range(epoches):
-            pass
+    def normal_KL_with_now(self,mu1,sigma1):
+        return kl_divergence(Normal(self.mu, self.sigma), Normal(mu1, sigma1))
+
+    def train_once(self, field): #没写（改）完
+        KL_3_20 = [0,0]
+
+        self.reset_before_getWheat()
+        field.go_another_field()
+
+        field.go_next_wheat()  # Ensure at least one wheat now
+        while not field.is_finished():
+            mu1 = self.mu1
+            sigma1 = self.sigma
+            decide = self.to_continue(field)
+            if field.k >= 3 and field.k <= 20:
+                KL_3_20.append(self.normal_KL_with_now(mu1,sigma1))
+            if  decide == True:
+                field.go_next_wheat()
+            else:
+                break
+        self.reward_info = field.finish_and_check()
+        self.reward = self.reward_info[0]
+
+        return self.reward_info
+
 
     def reset_before_getWheat(self):
         Agent_normal_model().__init__()
 
     def to_continue(self, field):
+        if field.k <= 2:
+            return True
+
+        mu1 = self.mu
+        sigma1 = self.sigma
         noLarger_prob = self.compute_noLarger_from_now(field)
         if noLarger_prob == -1:
             return True
-        noLarger_prob -= self.weights[int(field.k/self.w_size)]
+
+        if field.k <= self.w_size:
+            noLarger_prob -= self.weights[field.k-1] * self.normal_KL_with_now(mu1, sigma1)
         if noLarger_prob > 0.5:
             return False
         else:
