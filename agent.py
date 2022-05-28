@@ -14,8 +14,11 @@ class Agent():
     def to_continue(self, field):
         pass
 
-    def get_the_wheat(self, field):
+    def reset_before_getWheat(self):
         self.__init__()
+
+    def get_the_wheat(self, field):
+        self.reset_before_getWheat()
         field.go_another_field()
 
         field.go_next_wheat() # Ensure at least one wheat now
@@ -176,14 +179,21 @@ class Agent_prob_decision_leak(Agent_normal_model):
 
 class Agent_threshold_learning(Agent_normal_model):
     def __init__(self):
-        super().__init__()
+        Agent_normal_model().__init__()
         self.w_size = 20
         self.weights = np.zeros((self.w_size,))
+        self.lr_alpha = 0.1
+        self.a_reduce = 0.0001
+        self.lr_beta = 0.1
+        self.b_reduce = 0.0001
 
     def learning(self):
         epoches = 1000
         for _ in range(epoches):
             pass
+
+    def reset_before_getWheat(self):
+        Agent_normal_model().__init__()
 
     def to_continue(self, field):
         noLarger_prob = self.compute_noLarger_from_now(field)

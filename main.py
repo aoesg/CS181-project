@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import agent_test
 import time
+from scipy import stats
 
 if __name__ == '__main__':
     nf1 = wheat_field.Normal_Field()
@@ -23,7 +24,7 @@ if __name__ == '__main__':
 
     ag_prob_decision_leak = agent.Agent_prob_decision_leak()
 
-    num_game = 300
+    num_game = 50
 
     # print("ag_random,avg=", agent_test.normalFieldTest_avg(num_game,ag_random))
     # print("ag_37,avg=", agent_test.normalFieldTest_avg(num_game,ag_37))
@@ -38,5 +39,4 @@ if __name__ == '__main__':
     # print("ag_prob_rand_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_rand_10))
 
     print("ag_prob_decision_leak,avg=", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
-
 
