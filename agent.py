@@ -174,6 +174,26 @@ class Agent_prob_decision_leak(Agent_normal_model):
         not_larger_prob *= field.N - field.k
         return np.exp(not_larger_prob)
 
+class Agent_threshold_learning(Agent_normal_model):
+    def __init__(self):
+        super().__init__()
+        self.w_size = 20
+        self.weights = np.zeros((self.w_size,))
+
+    def learning(self):
+        epoches = 1000
+        for _ in range(epoches):
+            pass
+
+    def to_continue(self, field):
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
+            return True
+        noLarger_prob -= self.weights[int(field.k/self.w_size)]
+        if noLarger_prob > 0.5:
+            return False
+        else:
+            return True
 
 """
 model_Field.N
