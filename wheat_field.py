@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-LOWER_STD = 8
-UPPER_STD = 20
+LOWER_STD = 4
+UPPER_STD = 16
 
 WHEAT_SIZE = 100
 
