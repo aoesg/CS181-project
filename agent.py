@@ -29,7 +29,6 @@ class Agent():
             else:
                 break
         self.reward_info = field.finish_and_check()
-        # print(field.k)
         return self.reward_info
 
 class Agent_random(Agent):
@@ -41,26 +40,6 @@ class Agent_random(Agent):
             return False
         else:
             return True
-
-class Agent_upper_bound(Agent):
-    def to_continue(self, field):
-        return True
-
-    def get_the_wheat(self, field):
-        self.reset_before_getWheat()
-        field.go_another_field()
-
-        field.go_next_wheat() # Ensure at least one wheat now
-        while not field.is_finished():
-            if self.to_continue(field) == True:
-                field.go_next_wheat()
-            else:
-                break
-        self.reward_info = field.finish_and_check()
-        choosen = max(field.wheat_record)
-        normazlized_res = field.reward_normalize(choosen)
-        self.reward_info = field.check_info(normazlized_res)
-        return self.reward_info
 
 class Agent_37(Agent):
     def to_continue(self, field):
@@ -94,51 +73,6 @@ class Agent_sqrt_n(Agent):
     def to_continue(self, field):
         if field.k < field.N**0.5:
             return True
-        if field.height_of_this_wheat() == max(field.wheat_record):
-            return False
-        else:
-            return True
-
-class Agent_threshold_learning(Agent):
-    def __init__(self):
-        Agent.__init__(self)
-
-        self.threshold = -1
-        self.lr = 5e-3
-
-    def pre_train(self, field):
-        self.threshold = int(1e-1*field.N)
-        upper_bound = int(13e-2*field.N)
-        lower_bound = int(7e-2*field.N)
-        epoches = 10000
-        for _ in range(epoches):
-            self.reset_before_getWheat()
-            field.go_another_field()
-            field.go_next_wheat()  # Ensure at least one wheat now
-            
-            while not field.is_finished():
-                field.go_next_wheat()
-            reward = self.simulate_threshold_choose(field,self.threshold)           
-            for j in range(lower_bound, upper_bound):
-                if self.simulate_threshold_choose(field, j) > reward:
-                    self.threshold = (1-self.lr)*self.threshold+self.lr*j
-
-    def simulate_threshold_choose(self, field, threshold):
-        threshold = int(threshold)
-        max_wheat = max(field.wheat_record[:threshold])
-        for i in range(threshold,field.N):
-            if field.wheat_record[i] > max_wheat:
-                return field.wheat_record[i]
-        return -1
-    
-    def reset_before_getWheat(self):
-        Agent_normal_model.__init__(self)
-        self.threshold = int(self.threshold)
-
-    def to_continue(self, field):
-        if field.k <= self.threshold:
-            return True
-
         if field.height_of_this_wheat() == max(field.wheat_record):
             return False
         else:
@@ -243,23 +177,17 @@ class Agent_prob_decision_leak(Agent_normal_model):
         not_larger_prob *= field.N - field.k
         return np.exp(not_larger_prob)
 
-class Agent_prob_gain_learning(Agent_normal_model):
+class Agent_threshold_learning(Agent_normal_model):
     def __init__(self):
         Agent_normal_model.__init__(self)
         # normalized reward
         self.reward = None
         self.w_size = 20
         self.weights = np.zeros((self.w_size,))
-        for i in range(3):
-            self.weights[i] = 0.5
-#         self.weights= np.array([ 4.996e-01,  4.995e-01,  4.993e-01, -5.000e-04, -7.000e-04, -1.000e-03,\
-#  -6.000e-04, -9.000e-04, -7.000e-04, -1.100e-03, -1.100e-03, -4.000e-04,\
-#  -5.000e-04, -5.000e-04, -7.000e-04, -7.000e-04, -5.000e-04, -1.000e-03,\
-#  -4.000e-04, -6.000e-04])
-        self.lr_alpha = 1e-4
-        self.a_reduce = 1e-4
-        self.lr_beta = 1e-3
-        self.b_reduce = 1e-4
+        self.lr_alpha = 0.1
+        self.a_reduce = 0.0001
+        self.lr_beta = 0.1
+        self.b_reduce = 0.0001
 
     def normal_KL_with_now(self,mu1,sigma1):
         # print(self.mu, self.sigma,mu1, sigma1)
@@ -268,20 +196,20 @@ class Agent_prob_gain_learning(Agent_normal_model):
     def pre_train(self, field):
         epoches = 1000
         for i in range(epoches):
-            KL_4_20 = [1]*3
+            KL_3_20 = [0,0]
             self.reset_before_getWheat()
             field.go_another_field()
             field.go_next_wheat()  # Ensure at least one wheat now
             
             while not field.is_finished():
-                # mu1 = self.mu
-                # sigma1 = self.sigma
-                # if field.k == 4:
-                #     mu1 = np.mean(field.wheat_record[:-1])
-                #     sigma1 = np.std(field.wheat_record[:-1])
+                mu1 = self.mu
+                sigma1 = self.sigma
+                if field.k == 3:
+                    mu1 = np.mean(field.wheat_record[:-1])
+                    sigma1 = np.std(field.wheat_record[:-1])
                 decide = self.to_continue(field)
-                # if field.k >= 4 and field.k <= 20:
-                #     KL_4_20.append(1e-3)#self.normal_KL_with_now(mu1,sigma1))
+                if field.k >= 3 and field.k <= 20:
+                    KL_3_20.append(self.normal_KL_with_now(mu1,sigma1))
                 if  decide == True:
                     field.go_next_wheat()
                 else:
@@ -290,30 +218,28 @@ class Agent_prob_gain_learning(Agent_normal_model):
             self.reward = self.reward_info[0]
             for j in range(min(20,field.k)):
                 if field.wheat_record[j] > field.wheat_record[-1]:
-                    self.weights[j] -= (self.lr_alpha-0*self.a_reduce)##*KL_4_20[j]
-            if field.k < self.w_size and self.reward < 3.01:
-                self.weights[field.k-1] += (self.lr_beta-0*self.b_reduce)##*KL_4_20[field.k-1]
-            # for j in range(self.w_size):
-            #     self.weights[j] = max(0.0, self.weights[j])
+                    self.weights[j] -= (self.lr_alpha-i*self.a_reduce)*KL_3_20[j]
+            if field.k < self.w_size and self.reward < 3:
+                self.weights[field.k-1] += (self.lr_beta-i*self.b_reduce)*KL_3_20[field.k-1]
 
     def reset_before_getWheat(self):
-        Agent_normal_model.__init__(self)
+        Agent_normal_model().__init__()
 
     def to_continue(self, field):
-        if field.k <= 3:
+        if field.k <= 2:
             return True
 
-        # mu1 = self.mu
-        # sigma1 = self.sigma
-        # if field.k == 4:
-        #     mu1 = np.mean(field.wheat_record[:-1])
-        #     sigma1 = np.std(field.wheat_record[:-1])
+        mu1 = self.mu
+        sigma1 = self.sigma
+        if field.k == 3:
+            mu1 = np.mean(field.wheat_record[:-1])
+            sigma1 = np.std(field.wheat_record[:-1])
         noLarger_prob = self.compute_noLarger_from_now(field)
         if noLarger_prob == -1:
             return True
 
         if field.k <= self.w_size:
-            noLarger_prob -= self.weights[field.k-1]#*self.normal_KL_with_now(mu1, sigma1)
+            noLarger_prob -= self.weights[field.k-1] * self.normal_KL_with_now(mu1, sigma1)
         if noLarger_prob > 0.5:
             return False
         else:

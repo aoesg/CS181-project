@@ -6,8 +6,10 @@ from scipy import stats
 LOWER_STD = 8
 UPPER_STD = 20
 
+WHEAT_SIZE = 50
+
 class Field():
-    def __init__(self, N = 1000):
+    def __init__(self, N = WHEAT_SIZE):
         self.N = N
         self.k = 0
         self.wheat_record = []
@@ -68,7 +70,7 @@ class Field():
         return self.check_info(normazlized_res)
 
 class Normal_Field(Field):
-    def __init__(self, N = 1000):
+    def __init__(self, N = WHEAT_SIZE):
         Field.__init__(self, N)
 
         self.__mean = random.uniform(0, 500)
@@ -92,7 +94,7 @@ class Normal_Field(Field):
         plt.show()
 
 class Normal_Field_Leak(Normal_Field):
-    def __init__(self, N = 1000):
+    def __init__(self, N = WHEAT_SIZE):
         Field.__init__(self, N)
 
         self.__mean = random.uniform(0, 500)
@@ -121,32 +123,32 @@ class Normal_Field_Leak(Normal_Field):
     def std_leak(self):
         return self.__std
 
-class Beta_Field(Field):
-    def __init__(self, N=1000):
-        Field.__init__(self, N)
-
-        self.__scale = random.uniform(10, 500)
-        # self.__scale = 1
-        self.__alpha = random.uniform(1, 100)
-        self.__beta = random.uniform(1, 100)
-
-    def gen_wheat(self):
-        return stats.beta.rvs(self.__alpha, self.__beta) * self.__scale
-
-    def reward_normalize(self, reward):
-        return reward / self.__scale
-
-    def check_info(self, normazlized_R):
-        return (normazlized_R,
-                stats.beta.cdf(normazlized_R, self.__alpha, self.__beta),
-                self.__alpha,
-                self.__beta,
-                self.__scale,
-                self.reach_end)
-
-    def debug_hist(self):
-        plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
-        plt.title('Beta({0},{1}), scale={2}'.format(round(self.__alpha, 2), round(self.__beta, 2),
-                                                 round(self.__scale, 2)))
-        plt.xlim([0,1])
-        plt.show()
+# class Beta_Field(Field):
+#     def __init__(self, N=1000):
+#         Field.__init__(self, N)
+#
+#         self.__scale = random.uniform(10, 500)
+#         # self.__scale = 1
+#         self.__alpha = random.uniform(1, 100)
+#         self.__beta = random.uniform(1, 100)
+#
+#     def gen_wheat(self):
+#         return stats.beta.rvs(self.__alpha, self.__beta) * self.__scale
+#
+#     def reward_normalize(self, reward):
+#         return reward / self.__scale
+#
+#     def check_info(self, normazlized_R):
+#         return (normazlized_R,
+#                 stats.beta.cdf(normazlized_R, self.__alpha, self.__beta),
+#                 self.__alpha,
+#                 self.__beta,
+#                 self.__scale,
+#                 self.reach_end)
+#
+#     def debug_hist(self):
+#         plt.hist(self.reward_normalize(np.array(self.wheat_record)), bins=10, rwidth=0.8, density=True)
+#         plt.title('Beta({0},{1}), scale={2}'.format(round(self.__alpha, 2), round(self.__beta, 2),
+#                                                  round(self.__scale, 2)))
+#         plt.xlim([0,1])
+#         plt.show()
