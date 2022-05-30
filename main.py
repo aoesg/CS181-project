@@ -40,5 +40,5 @@ if __name__ == '__main__':
     # print("ag_prob_rand_10,avg=", agent_test.normalFieldTest_avg(num_game, ag_prob_rand_10))
 
     print("ag_prob_decision_leak,avg=", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
-    # print("ag_threshold_learning,avg=", agent_test.normalFieldTest_avg(num_game, ag_threshold_learning))
-    # print(ag_threshold_learning.weights)
+    print("ag_threshold_learning,avg=", agent_test.normalFieldTest_avg(num_game, ag_threshold_learning))
+    print(ag_threshold_learning.weights)
