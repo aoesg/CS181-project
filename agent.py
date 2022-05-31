@@ -41,6 +41,26 @@ class Agent_random(Agent):
         else:
             return True
 
+class Agent_upper_bound(Agent):
+    def to_continue(self, field):
+        return True
+
+    def get_the_wheat(self, field):
+        self.reset_before_getWheat()
+        field.go_another_field()
+
+        field.go_next_wheat() # Ensure at least one wheat now
+        while not field.is_finished():
+            if self.to_continue(field) == True:
+                field.go_next_wheat()
+            else:
+                break
+        self.reward_info = field.finish_and_check()
+        choosen = max(field.wheat_record)
+        normazlized_res = field.reward_normalize(choosen)
+        self.reward_info = field.check_info(normazlized_res)
+        return self.reward_info
+
 class Agent_37(Agent):
     def to_continue(self, field):
         if field.compute_explore_rate() < 0.37:
@@ -72,6 +92,53 @@ class Agent_37_t3(Agent):
 class Agent_sqrt_n(Agent):
     def to_continue(self, field):
         if field.k < field.N**0.5:
+            return True
+        if field.height_of_this_wheat() == max(field.wheat_record):
+            return False
+        else:
+            return True
+
+class Agent_threshold_learning(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+        self.threshold = -1
+        self.lr = 5e-2
+
+    def train(self, field):
+        self.lr *= 1e2/field.N
+        self.threshold = int(1e-1*field.N)
+        upper_bound = int(20e-2*field.N)
+        lower_bound = int(5e-2*field.N)
+        epoches = 10000
+        for _ in range(epoches):
+            self.reset_before_getWheat()
+            field.go_another_field()
+            field.go_next_wheat()  # Ensure at least one wheat now
+
+            while not field.is_finished():
+                field.go_next_wheat()
+            reward = self.simulate_threshold_choose(field,self.threshold)
+            temp1 = self.threshold
+            temp2 = self.threshold          
+            for j in range(lower_bound, upper_bound):
+                if self.simulate_threshold_choose(field, j) > reward:
+                    temp2 += -self.lr*temp1+self.lr*j
+            self.threshold = temp2
+
+    def simulate_threshold_choose(self, field, threshold):
+        threshold = int(threshold)
+        max_wheat = max(field.wheat_record[:threshold])
+        for i in range(threshold,field.N):
+            if field.wheat_record[i] > max_wheat:
+                return field.wheat_record[i]
+        return -1
+
+    def reset_before_getWheat(self):
+        Agent_normal_model.__init__(self)
+        self.threshold = int(self.threshold)
+
+    def to_continue(self, field):
+        if field.k <= self.threshold:
             return True
         if field.height_of_this_wheat() == max(field.wheat_record):
             return False
@@ -201,7 +268,57 @@ class Agent_prob_decision_leak(Agent_normal_model):
         not_larger_prob *= field.N - field.k
         return np.exp(not_larger_prob)
 
-class Agent_threshold_learning(Agent_normal_model):
+class Agent_prob_gain_learning(Agent_normal_model):
+    def __init__(self):
+        Agent_normal_model.__init__(self)
+        # normalized reward
+        self.reward = None
+        self.w_size = 20
+        self.weights = np.zeros((self.w_size,))
+        for i in range(3):
+            self.weights[i] = 0.3
+        self.lr_alpha = 1e-4
+        self.lr_beta = 1e-3
+
+    def train(self, field):
+        epoches = 2000
+        for i in range(epoches):
+            self.reset_before_getWheat()
+            field.go_another_field()
+            field.go_next_wheat()  # Ensure at least one wheat now
+            
+            while not field.is_finished():
+                decide = self.to_continue(field)
+                if  decide == True:
+                    field.go_next_wheat()
+                else:
+                    break
+            self.reward_info = field.finish_and_check()
+            self.reward = self.reward_info[0]
+            for j in range(min(20, field.k)):
+                if field.wheat_record[j] > field.wheat_record[-1]:
+                    self.weights[j] -= self.lr_alpha
+            if field.k < self.w_size and self.reward < 3:
+                self.weights[field.k-1] += self.lr_beta
+
+    def reset_before_getWheat(self):
+        Agent_normal_model.__init__(self)
+
+    def to_continue(self, field):
+        if field.k <= 2:
+            return True
+
+        noLarger_prob = self.compute_noLarger_from_now(field)
+        if noLarger_prob == -1:
+            return True
+        if field.k <= self.w_size:
+            noLarger_prob -= self.weights[field.k-1]
+        if noLarger_prob > 0.5:
+            return False
+        else:
+            return True
+
+class Agent_prob_KL_gain_learning(Agent_normal_model):
     def __init__(self):
         Agent_normal_model.__init__(self)
         # normalized reward
@@ -209,9 +326,9 @@ class Agent_threshold_learning(Agent_normal_model):
         self.w_size = 20
         self.weights = np.zeros((self.w_size,))
         self.lr_alpha = 0.1
-        self.a_reduce = 0.0001
+        self.a_reduce = 1e-4
         self.lr_beta = 0.1
-        self.b_reduce = 0.0001
+        self.b_reduce = 1e-4
 
     def normal_KL_with_now(self,mu1,sigma1):
         # print(self.mu, self.sigma,mu1, sigma1)
@@ -250,11 +367,11 @@ class Agent_threshold_learning(Agent_normal_model):
 
     def train(self, field):
         epoches = 1000
-        for i in range(epoches):
+        for _ in range(epoches):
             self.train_once(field)
 
     def reset_before_getWheat(self):
-        Agent_normal_model().__init__()
+        Agent_normal_model.__init__(self)
 
     def to_continue(self, field):
         if field.k <= 2:
@@ -276,7 +393,7 @@ class Agent_threshold_learning(Agent_normal_model):
         else:
             return True
 
-class Agent_fast_learning(Agent_threshold_learning):
+class Agent_prob_KL_gain_fast_learning(Agent_prob_KL_gain_learning):
     def __init__(self):
         Agent_normal_model.__init__(self)
         # normalized reward
@@ -323,7 +440,7 @@ class Agent_fast_learning(Agent_threshold_learning):
 
     def train(self, field):
         epoches = 1000
-        for i in range(epoches):
+        for _ in range(epoches):
             self.train_once(field)
 
 """
