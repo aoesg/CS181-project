@@ -179,8 +179,8 @@ class Agent_prob_decision(Agent_normal_model):
 
 class Agent_prob_decision_5(Agent_normal_model):
     def to_continue(self, field):
-        if field.k < 5:
-            return True
+        if field.k < 3:
+            return True;
 
         noLarger_prob = self.compute_noLarger_from_now(field)
 
@@ -273,16 +273,16 @@ class Agent_prob_gain_learning(Agent_normal_model):
         Agent_normal_model.__init__(self)
         # normalized reward
         self.reward = None
-        self.w_size = 20
+        self.w_size = 10
         self.weights = np.zeros((self.w_size,))
         for i in range(3):
-            self.weights[i] = 0.3
+            self.weights[i] = 1.0
         self.lr_alpha = 1e-4
         self.lr_beta = 1e-3
 
     def train(self, field):
-        epoches = 2000
-        for i in range(epoches):
+        epoches = 5000
+        for _ in range(epoches):
             self.reset_before_getWheat()
             field.go_another_field()
             field.go_next_wheat()  # Ensure at least one wheat now
@@ -295,7 +295,7 @@ class Agent_prob_gain_learning(Agent_normal_model):
                     break
             self.reward_info = field.finish_and_check()
             self.reward = self.reward_info[0]
-            for j in range(min(20, field.k)):
+            for j in range(min(self.w_size, field.k)):
                 if field.wheat_record[j] > field.wheat_record[-1]:
                     self.weights[j] -= self.lr_alpha
             if field.k < self.w_size and self.reward < 3:
@@ -305,7 +305,7 @@ class Agent_prob_gain_learning(Agent_normal_model):
         Agent_normal_model.__init__(self)
 
     def to_continue(self, field):
-        if field.k <= 2:
+        if field.k < 3:
             return True
 
         noLarger_prob = self.compute_noLarger_from_now(field)
@@ -323,7 +323,7 @@ class Agent_prob_KL_gain_learning(Agent_normal_model):
         Agent_normal_model.__init__(self)
         # normalized reward
         self.reward = None
-        self.w_size = 20
+        self.w_size = 10
         self.weights = np.zeros((self.w_size,))
         self.lr_alpha = 0.1
         self.a_reduce = 1e-4
@@ -331,11 +331,10 @@ class Agent_prob_KL_gain_learning(Agent_normal_model):
         self.b_reduce = 1e-4
 
     def normal_KL_with_now(self,mu1,sigma1):
-        # print(self.mu, self.sigma,mu1, sigma1)
         return kl_divergence(Normal(self.mu, self.sigma), Normal(mu1, sigma1))
 
     def train_once(self, field):
-        KL_3_20 = [0, 0]
+        KL_3_size = [0, 0]
         self.reset_before_getWheat()
         field.go_another_field()
         field.go_next_wheat()  # Ensure at least one wheat now
@@ -347,26 +346,25 @@ class Agent_prob_KL_gain_learning(Agent_normal_model):
                 mu1 = np.mean(field.wheat_record[:-1])
                 sigma1 = np.std(field.wheat_record[:-1])
             decide = self.to_continue(field)
-            if field.k >= 3 and field.k <= 20:
-                KL_3_20.append(self.normal_KL_with_now(mu1, sigma1))
+            if field.k >= 3 and field.k <= self.w_size:
+                KL_3_size.append(self.normal_KL_with_now(mu1, sigma1))
             if decide == True:
                 field.go_next_wheat()
             else:
                 break
         self.reward_info = field.finish_and_check()
         self.reward = self.reward_info[0]
-        for j in range(min(20, field.k)):
+        for j in range(min(self.w_size, field.k)):
             if field.wheat_record[j] > field.wheat_record[-1]:
-                self.weights[j] = max(0, self.weights[j] - self.lr_alpha * KL_3_20[j])
-                # self.weights[j] -= self.lr_alpha * KL_3_20[j]
-        if field.k < self.w_size and self.reward < 3:
-            self.weights[field.k - 1] += self.lr_beta * KL_3_20[field.k - 1]
+                self.weights[j] = max(0, self.weights[j] - self.lr_alpha*KL_3_size[j])
+        if field.k <= self.w_size and self.reward < 2:
+            self.weights[field.k-1] += self.lr_beta*KL_3_size[field.k-1];
 
         self.lr_alpha -= self.a_reduce
         self.lr_beta -= self.b_reduce
 
     def train(self, field):
-        epoches = 1000
+        epoches = 5000
         for _ in range(epoches):
             self.train_once(field)
 
@@ -374,7 +372,7 @@ class Agent_prob_KL_gain_learning(Agent_normal_model):
         Agent_normal_model.__init__(self)
 
     def to_continue(self, field):
-        if field.k <= 2:
+        if field.k < 3:
             return True
 
         mu1 = self.mu
@@ -387,7 +385,7 @@ class Agent_prob_KL_gain_learning(Agent_normal_model):
             return True
 
         if field.k <= self.w_size:
-            noLarger_prob -= self.weights[field.k-1] * self.normal_KL_with_now(mu1, sigma1)
+            noLarger_prob -= self.weights[field.k-1]*self.normal_KL_with_now(mu1, sigma1)
         if noLarger_prob > 0.5:
             return False
         else:
@@ -398,14 +396,14 @@ class Agent_prob_KL_gain_fast_learning(Agent_prob_KL_gain_learning):
         Agent_normal_model.__init__(self)
         # normalized reward
         self.reward = None
-        self.w_size = 20
+        self.w_size = 10
         self.weights = np.zeros((self.w_size,))
         self.lr_alpha = 0
         self.a_discount = 0.9
         self.lr_beta = 0.1
         self.b_discount = 1
 
-        self.separate_value = 3
+        self.separate_value = 2
 
     def train_once(self, field):
         KL_3_size = [0, 0]
@@ -429,17 +427,16 @@ class Agent_prob_KL_gain_fast_learning(Agent_prob_KL_gain_learning):
         self.reward_info = field.finish_and_check()
         self.reward = self.reward_info[0]
         for j in range(min(self.w_size, field.k)):
-            if field.wheat_record[j] > self.separate_value:
-                self.weights[j] = max(0, self.weights[j] - self.lr_alpha * KL_3_size[j])
-                # self.weights[j] -= self.lr_alpha * KL_3_20[j]
+            if (field.wheat_record[j]-self.mu)/self.sigma > self.separate_value:
+                self.weights[j] = max(0, self.weights[j] - self.lr_alpha*KL_3_size[j]);
         if field.k <= self.w_size and self.reward < self.separate_value:
-            self.weights[field.k - 1] += self.lr_beta * KL_3_size[field.k - 1]
+            self.weights[field.k-1] += self.lr_beta*KL_3_size[field.k-1]
 
         self.lr_alpha *= self.a_discount
         self.lr_beta *= self.b_discount
 
     def train(self, field):
-        epoches = 1000
+        epoches = 5000
         for _ in range(epoches):
             self.train_once(field)
 
