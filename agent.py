@@ -259,6 +259,23 @@ class Agent_prob_rand_10(Agent_normal_model):
         else:
             return True
 
+class Agent_prob_record(Agent_normal_model):
+    def __init__(self):
+        Agent_normal_model.__init__(self)
+
+        self.mu_record = []
+        self.sigma_record = []
+
+    def to_continue(self, field):
+        wheat_arr = np.array(field.wheat_record)
+        self.mu = np.mean(wheat_arr)
+        self.sigma = np.std(wheat_arr)
+
+        self.mu_record.append(self.mu)
+        self.sigma_record.append(self.sigma)
+
+        return True
+
 # Can only explore Normal_Field_Leak !!
 class Agent_prob_decision_leak(Agent_normal_model):
     def to_continue(self, field):

@@ -39,3 +39,8 @@ def normalField_leak_test(num_game, agent_leak):
 def train_in_normalFieldTest(agent):
     normalField = wheat_field.Normal_Field()
     agent.train(normalField)
+
+def normalFieldTest_record(agent):
+    normalField = wheat_field.Normal_Field()
+    info = agent.get_the_wheat(normalField)
+    return info[1], info[2]
