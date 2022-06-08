@@ -6,7 +6,7 @@ from scipy import stats
 LOWER_STD = 4
 UPPER_STD = 32
 
-WHEAT_SIZE = 200
+WHEAT_SIZE = 50
 
 class Field():
     def __init__(self, N = WHEAT_SIZE):

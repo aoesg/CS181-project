@@ -427,12 +427,12 @@ class Agent_prob_KL_gain_fast_learning(Agent_prob_KL_gain_learning):
         self.reward = None
         self.w_size = 10
         self.weights = np.zeros((self.w_size,))
-        self.lr_alpha = 0
+        self.lr_alpha = 0.0001
         self.a_discount = 0.9
-        self.lr_beta = 0.1
+        self.lr_beta = 0.01
         self.b_discount = 1
 
-        self.separate_value = 2
+        self.separate_value = 2.2
 
     def train_once(self, field):
         KL_3_size = [0, 0]
