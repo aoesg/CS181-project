@@ -180,7 +180,7 @@ class Agent_prob_decision(Agent_normal_model):
 class Agent_prob_decision_3(Agent_normal_model):
     def to_continue(self, field):
         if field.k < 3:
-            return True;
+            return True
 
         noLarger_prob = self.compute_noLarger_from_now(field)
 
@@ -192,7 +192,7 @@ class Agent_prob_decision_3(Agent_normal_model):
 class Agent_prob_decision_5(Agent_normal_model):
     def to_continue(self, field):
         if field.k < 5:
-            return True;
+            return True
 
         noLarger_prob = self.compute_noLarger_from_now(field)
 
