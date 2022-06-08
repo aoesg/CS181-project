@@ -1,5 +1,6 @@
 import wheat_field
 import agent
+import numpy as np
 
 def debug_field(field):
     while field.go_next_wheat():
@@ -18,6 +19,15 @@ def normalFieldTest_avg(num_game, agent):
     for i in range(num_game):
         res_normalized_height.append(agent.get_the_wheat(normalField)[0])
     return sum(res_normalized_height) / num_game
+
+def normalFieldTest_avg_var(num_game, agent):
+    normalField = wheat_field.Normal_Field()
+    # agent.pre_train(normalField)
+    res_normalized_height = []
+    for i in range(num_game):
+        res_normalized_height.append(agent.get_the_wheat(normalField)[0])
+    res_normalized_height_arr = np.array(res_normalized_height)
+    return res_normalized_height_arr.mean(), res_normalized_height_arr.var()
 
 def normalField_leak_test(num_game, agent_leak):
     normalField_leak = wheat_field.Normal_Field_Leak()
