@@ -429,10 +429,10 @@ class Agent_prob_KL_gain_fast_learning(Agent_prob_KL_gain_learning):
         self.weights = np.zeros((self.w_size,))
         self.lr_alpha = 0.0001
         self.a_discount = 0.9
-        self.lr_beta = 0.01
+        self.lr_beta = 0.005
         self.b_discount = 1
 
-        self.separate_value = 2.2
+        self.separate_value = 1.9
 
     def train_once(self, field):
         KL_3_size = [0, 0]
@@ -460,6 +460,72 @@ class Agent_prob_KL_gain_fast_learning(Agent_prob_KL_gain_learning):
                 self.weights[j] = max(0, self.weights[j] - self.lr_alpha*KL_3_size[j]);
         if field.k <= self.w_size and self.reward < self.separate_value:
             self.weights[field.k-1] += self.lr_beta*KL_3_size[field.k-1]
+
+        self.lr_alpha *= self.a_discount
+        self.lr_beta *= self.b_discount
+
+    def train(self, field):
+        epoches = 5000
+        for _ in range(epoches):
+            self.train_once(field)
+
+class Agent_prob_KL_gain_fast_learning_i2(Agent_prob_KL_gain_learning):
+    def __init__(self):
+        Agent_normal_model.__init__(self)
+        # normalized reward
+        self.mu_record = []
+        self.sigma_record = []
+
+        self.reward = None
+        self.w_size = 10
+        self.weights = np.zeros((self.w_size,))
+        self.lr_alpha = 0.0001
+        self.a_discount = 0.9
+        self.lr_beta = 0.005
+        self.b_discount = 1
+
+        self.separate_value = 2.2
+
+    def train_once(self, field):
+        self.reset_before_getWheat()
+        field.go_another_field()
+
+        field.go_next_wheat()  # Ensure at least one wheat now
+        """
+        wheat_arr = np.array(field.wheat_record)
+        self.mu = np.mean(wheat_arr)
+        self.sigma = np.std(wheat_arr)
+        if self.sigma < 0.001:
+            return -1
+        # not_larger_prob = (norm.cdf(wheat_list[-1], mu, np.sqrt(sigma)))**(field.N - len(wheat_list))
+        not_larger_prob = norm.logcdf(field.height_of_this_wheat(), self.mu, self.sigma)
+        not_larger_prob *= field.N - field.k
+        return np.exp(not_larger_prob)
+        """
+        KL_4_size = [0,0,0]
+        while field.k <= self.w_size and field.is_finished() == False:
+            wheat_arr = np.array(field.wheat_record)
+            self.mu = np.mean(wheat_arr)
+            self.sigma = np.std(wheat_arr)
+
+            self.mu_record.append(self.mu)
+            self.sigma_record.append(self.sigma)
+
+            decide = self.to_continue(field)
+
+            if field.k >= 4 and field.k <= self.w_size:
+                KL_4_size.append(self.normal_KL_with_now(self.mu_record[-2], self.sigma_record[-2]))
+            if decide == True:
+                field.go_next_wheat()
+            else:
+                break
+        self.reward_info = field.finish_and_check()
+        self.reward = self.reward_info[0]
+        for j in range(min(self.w_size, field.k)):
+            if (field.wheat_record[j]-self.mu)/self.sigma > self.separate_value:
+                self.weights[j] = max(0, self.weights[j] - self.lr_alpha*KL_4_size[j]);
+        if field.k <= self.w_size and self.reward < self.separate_value:
+            self.weights[field.k-1] += self.lr_beta*KL_4_size[field.k-1]
 
         self.lr_alpha *= self.a_discount
         self.lr_beta *= self.b_discount
