@@ -327,7 +327,7 @@ class Agent_prob_gain_learning(Agent_normal_model):
             for j in range(min(self.w_size, field.k)):
                 if field.wheat_record[j] > field.wheat_record[-1]:
                     self.weights[j] -= self.lr_alpha
-            if field.k < self.w_size and self.reward < 3:
+            if field.k <= self.w_size and self.reward < 3:
                 self.weights[field.k-1] += self.lr_beta
 
     def reset_before_getWheat(self):

@@ -38,44 +38,44 @@ if __name__ =='__main__':
 
     num_game = 8000
 
-    # print("ag_random, avg =", agent_test.normalFieldTest_avg(num_game,ag_random))
-    # print("ag_upper_bound, avg =", agent_test.normalFieldTest_avg(num_game, ag_upper_bound))
-    # print("ag_37, avg =", agent_test.normalFieldTest_avg(num_game,ag_37))
-    # print("ag_37_t3, avg =", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
-    # print("ag_sqrt_n, avg =", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
+    print("ag_random, avg =", agent_test.normalFieldTest_avg(num_game,ag_random))
+    print("ag_upper_bound, avg =", agent_test.normalFieldTest_avg(num_game, ag_upper_bound))
+    print("ag_37, avg =", agent_test.normalFieldTest_avg(num_game,ag_37))
+    print("ag_37_t3, avg =", agent_test.normalFieldTest_avg(num_game, ag_37_t3))
+    print("ag_sqrt_n, avg =", agent_test.normalFieldTest_avg(num_game, ag_sqrt_n))
 
-    # agent_test.train_in_normalFieldTest(ag_threshold_learning)
-    # print("ag_threshold_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_threshold_learning))
-    # print(ag_threshold_learning.threshold)
+    agent_test.train_in_normalFieldTest(ag_threshold_learning)
+    print("ag_threshold_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_threshold_learning))
+    print(ag_threshold_learning.threshold)
 
-    # print("ag_prob_decision, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
-    # print("ag_prob_decision_3, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_3))
-    # print("ag_prob_decision_5, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_5))
-    # print("ag_prob_decision_10, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
-    # print("ag_prob_decision_20, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_20))
-    # print("ag_prob_decision_d9, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_d9))
+    print("ag_prob_decision, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision))
+    print("ag_prob_decision_3, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_3))
+    print("ag_prob_decision_5, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_5))
+    print("ag_prob_decision_10, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_10))
+    print("ag_prob_decision_20, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_20))
+    print("ag_prob_decision_d9, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_decision_d9))
 
-    # print("ag_prob_rand, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_rand))
-    # print("ag_prob_rand_10, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_rand_10))
+    print("ag_prob_rand, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_rand))
+    print("ag_prob_rand_10, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_rand_10))
 
-    # print("ag_prob_decision_leak, avg =", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
+    print("ag_prob_decision_leak, avg =", agent_test.normalField_leak_test(num_game, ag_prob_decision_leak))
 
-    # agent_test.train_in_normalFieldTest(ag_prob_gain_learning)
-    # print("ag_prob_gain_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_gain_learning))
-    # print(ag_prob_gain_learning.weights)
+    agent_test.train_in_normalFieldTest(ag_prob_gain_learning)
+    print("ag_prob_gain_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_gain_learning))
+    print(ag_prob_gain_learning.weights)
 
     # agent_test.train_in_normalFieldTest(ag_prob_KL_gain_learning)
     # print("ag_prob_KL_gain_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_KL_gain_learning))
     # print(ag_prob_KL_gain_learning.weights)
 
-    # agent_test.train_in_normalFieldTest(ag_prob_KL_gain_fast_learning)
-    # ag_prob_KL_gain_fast_learning.weights = [0,0,0,0,0,0.19276294,0.05715854,0.16377059,0.11185975,0.0711218]
-    # print("ag_prob_KL_gain_fast_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_KL_gain_fast_learning))
-    # print(ag_prob_KL_gain_fast_learning.weights)
+    agent_test.train_in_normalFieldTest(ag_prob_KL_gain_fast_learning)
+    ag_prob_KL_gain_fast_learning.weights = [0,0,0,0,0,0.19276294,0.05715854,0.16377059,0.11185975,0.0711218]
+    print("ag_prob_KL_gain_fast_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_KL_gain_fast_learning))
+    print(ag_prob_KL_gain_fast_learning.weights)
 
-    # agent_test.train_in_normalFieldTest(ag_prob_KL_gain_fast_learning_i2)
-    # print("ag_prob_KL_gain_fast_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_KL_gain_fast_learning_i2))
-    # print(ag_prob_KL_gain_fast_learning_i2.weights)
+    agent_test.train_in_normalFieldTest(ag_prob_KL_gain_fast_learning_i2)
+    print("ag_prob_KL_gain_fast_learning, avg =", agent_test.normalFieldTest_avg(num_game, ag_prob_KL_gain_fast_learning_i2))
+    print(ag_prob_KL_gain_fast_learning_i2.weights)
 
     # 输出一次游戏的 真参数
     # 输出每一步 MLE 估计的参数
@@ -84,5 +84,4 @@ if __name__ =='__main__':
     # print(ag_prob_record.sigma_record)
 
     # 放到 agent_test 里面了
-    agent_test.mu_sigma_KL_graph()
-
+    # agent_test.mu_sigma_KL_graph()
